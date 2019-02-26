@@ -27,7 +27,7 @@ import (
 	"github.com/cloudfoundry/libcfbuildpack/detect"
 	"github.com/cloudfoundry/libcfbuildpack/helper"
 	"github.com/cloudfoundry/libcfbuildpack/layers"
-	"github.com/projectriff/riff-buildpack/metadata"
+	"github.com/projectriff/riff-buildpack/function"
 )
 
 const (
@@ -59,12 +59,12 @@ type RiffCommandInvoker struct {
 	functionLayer layers.Layer
 }
 
-func BuildPlanContribution(detect detect.Detect, metadata metadata.Metadata) buildplan.BuildPlan {
-	r := detect.BuildPlan[Dependency]
+func BuildPlanContribution(d detect.Detect, m function.Metadata) buildplan.BuildPlan {
+	r := d.BuildPlan[Dependency]
 	if r.Metadata == nil {
 		r.Metadata = buildplan.Metadata{}
 	}
-	r.Metadata[Command] = metadata.Artifact
+	r.Metadata[Command] = m.Artifact
 
 	return buildplan.BuildPlan{Dependency: r}
 }

@@ -18,35 +18,49 @@
 package command
 
 import (
+	"fmt"
+
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/libcfbuildpack/build"
 	"github.com/cloudfoundry/libcfbuildpack/detect"
-	"github.com/projectriff/riff-buildpack/invoker"
-	"github.com/projectriff/riff-buildpack/metadata"
+	"github.com/projectriff/riff-buildpack/function"
 )
 
 type CommandBuildpack struct {
 	name string
 }
 
-func (b *CommandBuildpack) Name() string {
-	return b.name
+func (bp *CommandBuildpack) Name() string {
+	return bp.name
 }
 
-func (b *CommandBuildpack) Detect(detect detect.Detect, metadata metadata.Metadata) (bool, error) {
+func (bp *CommandBuildpack) Detect(d detect.Detect, m function.Metadata) (*buildplan.BuildPlan, error) {
+	if detected, err := bp.detect(d, m); err != nil {
+		return nil, err
+	} else if detected {
+		plan := BuildPlanContribution(d, m)
+		return &plan, nil
+	}
+	// didn't detect
+	return nil, nil
+}
+
+func (*CommandBuildpack) detect(d detect.Detect, m function.Metadata) (bool, error) {
 	// Try command
-	return DetectCommand(detect, metadata)
+	return DetectCommand(d, m)
 }
 
-func (b *CommandBuildpack) BuildPlan(detect detect.Detect, metadata metadata.Metadata) buildplan.BuildPlan {
-	return BuildPlanContribution(detect, metadata)
+func (*CommandBuildpack) Build(b build.Build) error {
+	invoker, ok, err := NewCommandInvoker(b)
+	if err != nil {
+		return err
+	} else if !ok {
+		return fmt.Errorf("buildpack passed detection but did not know how to actually build")
+	}
+	return invoker.Contribute()
 }
 
-func (b *CommandBuildpack) Invoker(build build.Build) (invoker.Invoker, bool, error) {
-	return NewCommandInvoker(build)
-}
-
-func NewBuildpack() invoker.Buildpack {
+func NewBuildpack() function.Buildpack {
 	return &CommandBuildpack{
 		name: "command",
 	}

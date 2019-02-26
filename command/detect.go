@@ -23,15 +23,15 @@ import (
 
 	"github.com/cloudfoundry/libcfbuildpack/detect"
 	"github.com/cloudfoundry/libcfbuildpack/helper"
-	"github.com/projectriff/riff-buildpack/metadata"
+	"github.com/projectriff/riff-buildpack/function"
 )
 
-func DetectCommand(detect detect.Detect, metadata metadata.Metadata) (bool, error) {
-	if metadata.Artifact == "" {
+func DetectCommand(d detect.Detect, m function.Metadata) (bool, error) {
+	if m.Artifact == "" {
 		return false, nil
 	}
 
-	path := filepath.Join(detect.Application.Root, metadata.Artifact)
+	path := filepath.Join(d.Application.Root, m.Artifact)
 
 	ok, err := helper.FileExists(path)
 	if err != nil || !ok {
@@ -44,7 +44,7 @@ func DetectCommand(detect detect.Detect, metadata metadata.Metadata) (bool, erro
 	if info.Mode().IsRegular() && info.Mode().Perm()&0100 == 0100 {
 		return true, nil
 	} else {
-		detect.Logger.Debug("Disregarding %q for the 'command' invoker, as it does not have executable permission", path)
+		d.Logger.Debug("Disregarding %q for the 'command' invoker, as it does not have executable permission", path)
 		return false, nil
 	}
 }
