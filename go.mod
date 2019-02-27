@@ -9,4 +9,4 @@ require (
 	golang.org/x/sys v0.0.0-20190130150945-aca44879d564 // indirect
 )
 
-replace github.com/projectriff/riff-buildpack => github.com/scothis/riff-buildpack v0.1.1-0.20190226211521-e6055735323e
+replace github.com/projectriff/riff-buildpack => github.com/scothis/riff-buildpack v0.1.1-0.20190227184726-f659cd04d816

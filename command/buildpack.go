@@ -27,11 +27,11 @@ import (
 )
 
 type CommandBuildpack struct {
-	name string
+	id string
 }
 
-func (bp *CommandBuildpack) Name() string {
-	return bp.name
+func (bp *CommandBuildpack) Id() string {
+	return bp.id
 }
 
 func (bp *CommandBuildpack) Detect(d detect.Detect, m function.Metadata) (*buildplan.BuildPlan, error) {
@@ -62,6 +62,6 @@ func (*CommandBuildpack) Build(b build.Build) error {
 
 func NewBuildpack() function.Buildpack {
 	return &CommandBuildpack{
-		name: "command",
+		id: "command",
 	}
 }
